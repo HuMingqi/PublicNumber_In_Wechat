@@ -6,6 +6,9 @@ from django.utils.encoding import smart_str
 import hashlib
 
 @csrf_exempt
+def test(request):
+    return HttpResponse("test succeed!")
+
 def index(request):
     if request.method=='GET':                                   #微信接入认证
         response=HttpResponse(checkSignature(request))
