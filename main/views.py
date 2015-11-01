@@ -10,7 +10,7 @@ def test(request):
     return HttpResponse("test succeed!")
 
 def index(request):
-    if request.method=='GET':                                   #΢�Ž�����֤
+    if request.method=='GET':                                   #微信接入认证
         response=HttpResponse(checkSignature(request))
         return response
     else:
