@@ -10,7 +10,7 @@ def test(request):
     return HttpResponse("test succeed!")
 
 def index(request):
-    if request.method=='GET':                                   #Î¢ĞÅ½ÓÈëÈÏÖ¤
+    if request.method=='GET':                                   #Î¢ï¿½Å½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¤
         response=HttpResponse(checkSignature(request))
         return response
     else:
@@ -36,7 +36,7 @@ def replyTextMsg(reqxml):
     <CreateTime>%s</CreateTime>
     <MsgType><![CDATA[text]]></MsgType>
     <Content><![CDATA[%s]]></Content>
-    </xml>"""%(user,server,CreateTime,"ğĞğÄÑ§Éà£º"+Content+"\n by xiaoQ")              
+    </xml>"""%(user,server,CreateTime,"é¹¦é¹‰å­¦èˆŒ:"+Content+"\n by xiaoQ")              
     return replyXml
         
 def checkSignature(request):
