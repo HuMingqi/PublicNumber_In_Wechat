@@ -48,8 +48,8 @@ def checkSignature(request):
     token='hmqi'
     tmplist=[token,timestamp,nonce]
     tmplist.sort()
-    tmpstr="%s%s%s"%tuple(tmplist)
-    tmpstr=hashlib.sha1(tmpstr).hexdigest()
+    tmpstr="%s%s%s"%tuple(tmplist)                                                 
+    tmpstr=hashlib.sha1(tmpstr.encode('utf-8')).hexdigest()                           #默认utf-8，先编码在hashing
     if tmpstr==signature:
         return echostr
     else:
