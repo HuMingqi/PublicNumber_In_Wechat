@@ -59,6 +59,7 @@ def replyTextMsg(reqxml):
     me = reqxml.find('ToUserName').text
     user = reqxml.find('FromUserName').text    
     content = reqxml.find('Content').text
+    
     if(content=='0'):
         menu='''菜单：
         1.互联网资讯
@@ -86,6 +87,14 @@ def replyTextMsg(reqxml):
     elif(content[0]=='%'):
         trans=youdaotrans(content[1:])           
         replyXml=textMsg%(user,me,int(time.time()),trans)
+    else:
+        menu='''菜单：
+        1.互联网资讯
+        2.编程之旅
+        3.兴趣分享
+        4.内置应用        
+        '''
+        replyXml =textMsg%(user,me,int(time.time()),menu) 
     return replyXml
 
 
