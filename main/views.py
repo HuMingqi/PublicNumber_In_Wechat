@@ -4,32 +4,35 @@ from django.views.decorators.csrf import csrf_exempt
 from xml.etree import ElementTree as et
 from django.utils.encoding import smart_str
 import hashlib
+import time
 
 @csrf_exempt
 def test(request):
     return HttpResponse("test succeed!")
 
+@csrf_exempt                                                    #disabling the django security request for this view 不验证django token
 def index(request):
     if request.method=='GET':                                   #微信接入认证
         response=HttpResponse(checkSignature(request))
         return response
     else:
-        xml_str = smart_str(request.body)
+        print('post method')
+        xml_str = smart_str(request.read())
         request_xml = et.fromstring(xml_str)
-        msgType = request_xml.find('MsgType').text
-        
+        #request_xml=et.iterparse(request)
+        msgType = request_xml.find('MsgType').text  
+        print(msgType) 
         if(msgType=='text'):                
             return HttpResponse(replyTextMsg(request_xml))   
         
-             
-
+                     
 def replyTextMsg(reqxml):
+    print('method replyText')
     server = reqxml.find('ToUserName').text
-    user = reqxml.find('FromUserName').text
-    CreateTime = reqxml.find('CreateTime').text
-    #MsgType = reqxml.find('MsgType').text
+    user = reqxml.find('FromUserName').text    
     Content = reqxml.find('Content').text
-    MsgId = reqxml.find('MsgId').text
+    #MsgId = reqxml.find('MsgId').text
+    CreateTime = int(time.time())                                   #(int)time.time() error
     replyXml ="""<xml>
     <ToUserName><![CDATA[%s]]></ToUserName>
     <FromUserName><![CDATA[%s]]></FromUserName>
