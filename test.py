@@ -1,5 +1,7 @@
 from urllib import request
 from urllib import parse
+import json
+from pip._vendor.requests.models import Response
 
 def testxml():
     print('method testxml')
@@ -9,7 +11,7 @@ def testxml():
      <FromUserName><![CDATA[user]]></FromUserName> 
      <CreateTime>1348831860</CreateTime>
      <MsgType><![CDATA[text]]></MsgType>
-     <Content><![CDATA[test]]></Content>
+     <Content><![CDATA[0]]></Content>
      <MsgId>1234567890123456</MsgId>
      </xml>'''                        
     url='http://localhost:8000/main/'
@@ -19,5 +21,23 @@ def testxml():
         resp=request.urlopen(req)                           #500 , keyError(key is not found) when debugging
     except Exception as ex:
         print(ex)    
-    print(resp.read()) 
+    print(resp.read())          #bytes
+    
+    
+def youdaotrans(qtext):
+    print('method ydtrans') 
+    qtext=parse.quote(qtext,encoding='utf-8')   
+    url='http://fanyi.youdao.com/openapi.do?keyfrom=xiaoQ-winxin&key=2108254436&type=data&doctype=json&version=1.1&q='+qtext
+    resp=request.urlopen(url,timeout=1)
+    #print(resp.read())
+    tran=resp.read()                            #read 不可反复读取！！
+    rs=json.loads(tran.decode())
+    if(rs['errorCode']==0):
+            trans=''            
+            if('basic' in rs):
+                trans=rs['basic']['explains']
+                trans='基础翻译：'+'\n'.join(trans)        
+            trans=trans+'\n'+'网络翻译：\n'+'\n'.join(rs['translation'])
+            print(trans)
+    
     

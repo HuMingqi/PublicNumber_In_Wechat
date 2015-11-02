@@ -4,7 +4,19 @@ from django.views.decorators.csrf import csrf_exempt
 from xml.etree import ElementTree as et
 from django.utils.encoding import smart_str
 import hashlib
+from urllib import request,parse
 import time
+import json
+from ftplib import parse150
+
+#global veriable
+textMsg="""<xml>                                                        
+    <ToUserName><![CDATA[%s]]></ToUserName>
+    <FromUserName><![CDATA[%s]]></FromUserName>
+    <CreateTime>%s</CreateTime>
+    <MsgType><![CDATA[text]]></MsgType>
+    <Content><![CDATA[%s]]></Content>
+    </xml>"""
 
 @csrf_exempt
 def test(request):
@@ -22,25 +34,85 @@ def index(request):
         #request_xml=et.iterparse(request)
         msgType = request_xml.find('MsgType').text  
         print(msgType) 
-        if(msgType=='text'):                
+        if(msgType=='event'):
+            return HttpResponse(replyEvent(request_xml))
+        elif(msgType=='text'):                
             return HttpResponse(replyTextMsg(request_xml))   
         
+  
+def replyEvent(reqxml): 
+    print('method replyEvent')    
+    if(reqxml.find('Event').text=='subscribe'):
+        me = reqxml.find('ToUserName').text
+        user = reqxml.find('FromUserName').text
+        content='''感谢订阅xiaoQ的微信公众号！这里有互联网资讯，兴趣分享，个人编码分享，有趣的内置应用...
+                        回复数字0 查看菜单
+        xiaoQ会会不断努力完善这个公众号，谢谢大家支持 ~
+        xiaoQ新浪微博：http://weibo.com/u/5143027608
+        written by 2015/11/02                       
+        '''     
+        replyXml=textMsg%(user,me,int(time.time()),content)
+        return replyXml              
                      
 def replyTextMsg(reqxml):
     print('method replyText')
-    server = reqxml.find('ToUserName').text
+    me = reqxml.find('ToUserName').text
     user = reqxml.find('FromUserName').text    
-    Content = reqxml.find('Content').text
-    #MsgId = reqxml.find('MsgId').text
-    CreateTime = int(time.time())                                   #(int)time.time() error
-    replyXml ="""<xml>
-    <ToUserName><![CDATA[%s]]></ToUserName>
-    <FromUserName><![CDATA[%s]]></FromUserName>
-    <CreateTime>%s</CreateTime>
-    <MsgType><![CDATA[text]]></MsgType>
-    <Content><![CDATA[%s]]></Content>
-    </xml>"""%(user,server,CreateTime,"鹦鹉学舌:"+Content+"\n by xiaoQ")              
+    content = reqxml.find('Content').text
+    if(content=='0'):
+        menu='''菜单：
+        1.互联网资讯
+        2.编程之旅
+        3.兴趣分享
+        4.内置应用        
+        '''
+        replyXml =textMsg%(user,me,int(time.time()),menu)      #(int)time.time() error        
+    elif(content=='1'):
+        replyXml=textMsg%(user,me,int(time.time()),"暂时还没有内容")
+    elif(content=='2'):
+        replyXml=textMsg%(user,me,int(time.time()),"暂时还没有内容")
+    elif(content=='3'):
+        replyXml=textMsg%(user,me,int(time.time()),"暂时还没有内容")
+    elif(content=='4'):
+        submenu='''内置应用子菜单：
+        41.你发我译
+        42.clothes助手 (编码中coding!)       
+        '''     
+        replyXml=textMsg%(user,me,int(time.time()),submenu)  
+    elif(content=='41'):
+        replyXml=textMsg%(user,me,int(time.time()),'请发送你要翻译的单词或句子，注意文本以%开头')
+    elif(content=='42'):
+        replyXml=textMsg%(user,me,int(time.time()),'请发送一张你喜欢的服饰图片，clothes助手将帮你匹配到最相似服饰并发送给你购买链接^_^')
+    elif(content[0]=='%'):
+        trans=youdaotrans(content[1:])           
+        replyXml=textMsg%(user,me,int(time.time()),trans)
     return replyXml
+
+
+def youdaotrans(qtext):
+    print('method ydtrans')
+    qqtext=parse.quote(qtext,encoding='utf-8')                       #编码非ascii字符
+    url='http://fanyi.youdao.com/openapi.do?keyfrom=xiaoQ-winxin&key=2108254436&type=data&doctype=json&version=1.1&q='+qqtext
+    resp=request.urlopen(url,timeout=2)
+    rs=json.loads(resp.read().decode())             #bytes -> str
+    if('errorCode' not in rs):
+        return '网络超时，请稍后再试！'
+    if(rs['errorCode']==0):
+            trans=''            
+            if('basic' in rs):
+                trans=rs['basic']['explains']
+                trans='基础翻译：'+'\n'.join(trans)        
+            trans=trans+'\n'+'网络翻译：\n'+'\n'.join(rs['translation'])
+    elif(rs['errorCode'] == 20):
+        trans='对不起，要翻译的文本过长'
+    elif(rs['errorCode'] == 30):
+        trans='对不起，无法进行有效的翻译'
+    elif(rs['errorCode'] == 40):
+        trans='对不起，不支持的语言类型'
+    else:
+        trans='对不起，您输入的文本  %s 暂时无法翻译,请稍后再试'%qtext           
+    return trans
+    
         
 def checkSignature(request):
     signature=request.GET.get('signature',None)
