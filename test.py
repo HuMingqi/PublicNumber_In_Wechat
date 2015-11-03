@@ -11,7 +11,7 @@ def testxml():
      <FromUserName><![CDATA[user]]></FromUserName> 
      <CreateTime>1348831860</CreateTime>
      <MsgType><![CDATA[text]]></MsgType>
-     <Content><![CDATA[0]]></Content>
+     <Content><![CDATA[1]]></Content>
      <MsgId>1234567890123456</MsgId>
      </xml>'''                        
     url='http://localhost:8000/main/'
