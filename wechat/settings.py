@@ -104,6 +104,6 @@ USE_TZ = True
 
 #SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 #SITE_ROOT = os.path.abspath('../')
-STATIC_ROOT = os.path.join('../', 'static')  #necessary in production!!! union location for all apps'static
+STATIC_ROOT = '../static/'  #necessary in production!!! union location for all apps'static
 
 STATIC_URL = '/static/'   # set prefix url for static resource.
