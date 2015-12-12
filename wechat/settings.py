@@ -104,6 +104,14 @@ USE_TZ = True
 
 #SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 #SITE_ROOT = os.path.abspath('../')
-STATIC_ROOT = '../static/'  #necessary in production!!! union location for all apps'static
 
-STATIC_URL = '/static/'   # set prefix url for static resource.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+STATIC_ROOT = 'static'     #necessary in production!!! union location for all apps'static
+STATIC_URL = '/static/'    # set prefix url for static resource.
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)  
+
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+
+
