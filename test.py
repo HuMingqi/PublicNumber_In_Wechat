@@ -1,7 +1,6 @@
 from urllib import request
 from urllib import parse
 import json
-from pip._vendor.requests.models import Response
 
 def testxml():
     print('method testxml')

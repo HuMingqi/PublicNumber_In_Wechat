@@ -7,7 +7,6 @@ import hashlib
 from urllib import request,parse
 import time
 import json
-from ftplib import parse150
 
 #global veriable
 textMsg="""<xml>                                                        
@@ -106,7 +105,7 @@ def replyTextMsg(reqxml):
         replyXml=textMsg%(user,me,int(time.time()),submenu)  
     elif(content=='5'):
         myself='''xiaoQ新浪微博：
-        http://weibo.com/u/5143027608
+        http://weibo.com/u/5143027608        
                         邮箱：
         xiaoq_focus_net@sina.com        
                         欢迎与各位交流!
